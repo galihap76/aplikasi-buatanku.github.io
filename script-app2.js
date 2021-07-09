@@ -1,29 +1,66 @@
-// JavaScript Document
-let btn_kucing = document.querySelector('.btn-kucing');
-let btn_anjing = document.querySelector('.btn-anjing');
-let bg_kucing = document.querySelector('.bg-kucing');
-let bg_anjing = document.querySelector('.bg-anjing');
+//javascript document
 
-btn_kucing.addEventListener('click', gambarKucing);
-btn_anjing.addEventListener('click', gambarAnjing);
-
-function gambarKucing(){
-fetch('https://aws.random.cat/meow')
-.then(res=> res.json())
-.then(call =>{
-	bg_kucing.innerHTML = `<img src=${call.file} alt="kucing" style="width:100%; height:350px;"/>`; 
-});	
-}
-
-function gambarAnjing(){
-	fetch('https://random.dog/woof.json')
-	.then(res=> res.json())
-	.then(call=>{
-		if(call.url.includes('.mp4')){
-			gambarAnjing();
-		}else{
-				bg_anjing.innerHTML = `<img src=${call.url} alt="anjing"  style="width:100%; height:350px;"/>`;
-		}
+let search_button=document.querySelector('.search-button');
+search_button.addEventListener('click', function(){
+	const inputKeyword=document.querySelector('.input-keyword');
+	fetch('https://www.themealdb.com/api/json/v1/1/filter.php?i=' + inputKeyword.value)
+	.then(response=>response.json())
+	.then(response=>{
+		let meals=response.meals;
+		let cards='';
+		meals.forEach(m=> cards += showFood(m));
+		const foodContainer=document.querySelector('.food-container');
+		foodContainer.innerHTML = cards;
+		
+//		Ketika tombol detail di klik
+		
+		const modalDetailButton = document.querySelectorAll('.modal-detail-button');
+		modalDetailButton.forEach(btn=>{
+			btn.addEventListener('click', function(){
+				const id = this.dataset.id;
+				fetch('https://www.themealdb.com/api/json/v1/1/lookup.php?i=' + id)
+				.then(response=> response.json())
+				.then(m=>{
+					let meals2 = m.meals;
+					let cards2 = '';
+					meals2.forEach(f=> cards2 += showFoodDetail(f));
+					let modalBody= document.querySelector('.modal-body');
+					modalBody.innerHTML = cards2;
+				});
+			});
+		});
 	});
+});
+
+
+
+
+
+function showFood(m){
+	return `<div class="col-md-4 my-5">
+   			<div class="card">
+		  <img src="${m.strMealThumb}" class="card-img-top">
+		  <div class="card-body">
+			<h5 class="card-title">${m.strMeal}</h5>
+			<a href="#" class="btn btn-primary modal-detail-button" data-toggle="modal" data-target="#foodDetailModal" data-id="${m.idMeal}">Show Detail</a>
+		  </div>
+		</div>
+   		</div>
+   	</div>`;
 }
 
+function showFoodDetail(m){
+	return `<div class="container-fluid">
+        	<div class="row">
+        			<center><img src="${m.strMealThumb}" class="img-fluid mb-4 w-50"></center>
+        		<div class="col-md mb-3">
+        			<ul class="list-group">
+          <center><h3>${m.strMeal}</h3></center>
+          <p>${m.strInstructions}</p>
+		
+                </ul>
+        		</div>
+        	</div>
+        </div>
+      </div>`;
+}
