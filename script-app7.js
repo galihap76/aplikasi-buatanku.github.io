@@ -1,4 +1,4 @@
-// JavaScript Document
+ //JavaScript Document
 let nilai1 = document.getElementById('nilai1');
 let nilai2 = document.getElementById('nilai2');
 let hasil = document.getElementById('hasil');
@@ -45,3 +45,4 @@ function btnReset(){
 	form.nilai1.value = "";
 	form.nilai2.value = "";
 }
+
